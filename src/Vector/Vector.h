@@ -1,6 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <initializer_list>
+
 template <typename T>
 class Vector {
     T *m_data{ nullptr };
@@ -9,10 +11,22 @@ class Vector {
 
 public:
     Vector() = default;
-    Vector(size_t size);
+    explicit Vector(size_t size);
     Vector(size_t size, const T &value);
+    Vector(const std::initializer_list<T> list);
+    Vector(const Vector<T> &another);
+    ~Vector();
 
     const T &operator[](size_t index) const;
+    T &operator[](size_t index);
+    Vector<T> &operator=(const Vector<T> &another);
+
+    size_t capacity() const;
+    size_t size() const;
+    T &at(size_t index);
+    const T &at(size_t index) const;
+    void swap(Vector<T> &another) noexcept;
+
 };
 
 #include "Vector.inl";
