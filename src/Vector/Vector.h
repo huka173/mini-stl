@@ -23,10 +23,18 @@ public:
 
     size_t capacity() const;
     size_t size() const;
+    void swap(Vector<T> &another) noexcept;
+    bool empty() const;
+
     T &at(size_t index);
     const T &at(size_t index) const;
-    void swap(Vector<T> &another) noexcept;
 
+    void push_back(const T &elem);
+
+    T *data() noexcept;
+    const T *data() const noexcept;
+
+    void reserve(size_t n);
 };
 
 #include "Vector.inl";

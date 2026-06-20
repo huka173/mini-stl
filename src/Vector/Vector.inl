@@ -100,3 +100,56 @@ const T &Vector<T>::at(size_t index) const {
 
     return m_data[index];
 }
+
+template <typename T>
+bool Vector<T>::empty() const {
+    return m_size == 0;
+}
+
+template <typename T>
+void Vector<T>::push_back(const T &elem) {
+    if (m_size == m_capacity) {
+        if (m_capacity == 0) {
+            m_capacity = 1;
+        } else {
+            m_capacity = m_size * 2;
+        }
+        
+        T *copy{ new T[m_capacity] };
+        for (size_t i{}; i < m_size; ++i) {
+            copy[i] = m_data[i];
+        }
+        copy[m_size] = elem;
+        ++m_size;
+
+        delete[] m_data;
+        m_data = copy;
+    } else {
+        m_data[m_size] = elem;
+        ++m_size;
+    }
+}
+
+template <typename T>
+T *Vector<T>::data() noexcept {
+    return m_data;
+}
+
+template <typename T>
+const T *Vector<T>::data() const noexcept {
+    return m_data;
+}
+
+template <typename T>
+void Vector<T>::reserve(size_t n) {
+    if (n > m_capacity) {
+        m_capacity = n;
+        T *copy{ new T[m_capacity] };
+        for (size_t i{}; i < m_size; ++i) {
+            copy[i] = m_data[i];
+        }
+
+        delete[] m_data;
+        m_data = copy;
+    }
+}
