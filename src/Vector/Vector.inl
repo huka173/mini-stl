@@ -48,7 +48,7 @@ Vector<T>::~Vector() {
 }
 
 template <typename T>
-Vector<T> &Vector<T>::operator=(const Vector<T> &another) {
+Vector<T> &Vector<T>::operator=(const Vector<T> &another) & {
     Vector<T> copy{ another };
     swap(copy);
     return *this;
@@ -107,6 +107,11 @@ bool Vector<T>::empty() const {
 }
 
 template <typename T>
+void Vector<T>::clear() noexcept {
+    m_size = 0;
+}
+
+template <typename T>
 void Vector<T>::push_back(const T &elem) {
     if (m_size == m_capacity) {
         if (m_capacity == 0) {
@@ -114,7 +119,7 @@ void Vector<T>::push_back(const T &elem) {
         } else {
             m_capacity = m_size * 2;
         }
-        
+
         T *copy{ new T[m_capacity] };
         for (size_t i{}; i < m_size; ++i) {
             copy[i] = m_data[i];
@@ -127,6 +132,13 @@ void Vector<T>::push_back(const T &elem) {
     } else {
         m_data[m_size] = elem;
         ++m_size;
+    }
+}
+
+template <typename T>
+void Vector<T>::pop_back() {
+    if (m_size != 0) {
+        --m_size;
     }
 }
 
@@ -152,4 +164,24 @@ void Vector<T>::reserve(size_t n) {
         delete[] m_data;
         m_data = copy;
     }
+}
+
+template <typename T>
+T &Vector<T>::front() {
+    return *m_data;
+}
+
+template <typename T>
+const T &Vector<T>::front() const {
+    return *m_data;
+}
+
+template <typename T>
+T &Vector<T>::back() {
+    return *(m_data + (m_size - 1));
+}
+
+template <typename T>
+const T &Vector<T>::back() const {
+    return *(m_data + (m_size - 1));
 }

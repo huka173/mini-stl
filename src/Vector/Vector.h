@@ -19,22 +19,29 @@ public:
 
     const T &operator[](size_t index) const;
     T &operator[](size_t index);
-    Vector<T> &operator=(const Vector<T> &another);
+    Vector<T> &operator=(const Vector<T> &another) &;
 
     size_t capacity() const;
     size_t size() const;
     void swap(Vector<T> &another) noexcept;
     bool empty() const;
+    void clear() noexcept;
 
     T &at(size_t index);
     const T &at(size_t index) const;
 
     void push_back(const T &elem);
+    void pop_back();
 
     T *data() noexcept;
     const T *data() const noexcept;
 
     void reserve(size_t n);
+
+    T &front();
+    const T &front() const;
+    T &back();
+    const T &back() const;
 };
 
 #include "Vector.inl";
