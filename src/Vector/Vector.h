@@ -26,6 +26,8 @@ public:
     void swap(Vector<T> &another) noexcept;
     bool empty() const;
     void clear() noexcept;
+    void erase(size_t index);
+    void erase(size_t start, size_t end);
 
     T &at(size_t index);
     const T &at(size_t index) const;
@@ -37,6 +39,9 @@ public:
     const T *data() const noexcept;
 
     void reserve(size_t n);
+    void resize(size_t n);
+    void resize(size_t n, const T &val);
+    void shrink_to_fit();
 
     T &front();
     const T &front() const;

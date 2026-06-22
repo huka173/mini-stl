@@ -112,6 +112,30 @@ void Vector<T>::clear() noexcept {
 }
 
 template <typename T>
+void Vector<T>::erase(size_t index) {
+    erase(index, index + 1);
+}
+
+template <typename T>
+void Vector<T>::erase(size_t start, size_t end) {
+    assert(start <= end);
+    assert(end <= m_size);
+
+    size_t diff{ end - start };
+    T *copy{ new T[m_capacity] };
+    for (size_t i{}, k{}; i < m_size; ++i) {
+        if ((i < start) || (i >= end)) {
+            copy[k] = m_data[i];
+            ++k;
+        }
+    }
+
+    delete[] m_data;
+    m_data = copy;
+    m_size -= diff;
+}
+
+template <typename T>
 void Vector<T>::push_back(const T &elem) {
     if (m_size == m_capacity) {
         if (m_capacity == 0) {
@@ -167,21 +191,69 @@ void Vector<T>::reserve(size_t n) {
 }
 
 template <typename T>
+void Vector<T>::resize(size_t n, const T &val) {
+    if (n > m_size) {
+        size_t diff{ n - m_size };
+        m_size = n;
+        if (m_size > m_capacity) {
+            m_capacity = m_size * 2;
+        }
+
+        T *copy{ new T[m_capacity] };
+        for (size_t i{}; i < m_size; ++i) {
+            if (i < (m_size - diff)) {
+                copy[i] = m_data[i];
+            } else {
+                copy[i] = val;
+            }
+        }
+
+        delete[] m_data;
+        m_data = copy;
+    } else {
+        m_size = n;
+    }
+}
+
+template <typename T>
+void Vector<T>::resize(size_t n) {
+    resize(n, T{});
+}
+
+template <typename T>
+void Vector<T>::shrink_to_fit() {
+    if (m_capacity > m_size) {
+        m_capacity = m_size;
+        T *copy{ new T[m_capacity] };
+        for (size_t i{}; i < m_size; ++i) {
+            copy[i] = m_data[i];
+        }
+
+        delete[] m_data;
+        m_data = copy;
+    }
+}
+
+template <typename T>
 T &Vector<T>::front() {
+    assert(!empty());
     return *m_data;
 }
 
 template <typename T>
 const T &Vector<T>::front() const {
+    assert(!empty());
     return *m_data;
 }
 
 template <typename T>
 T &Vector<T>::back() {
+    assert(!empty());
     return *(m_data + (m_size - 1));
 }
 
 template <typename T>
 const T &Vector<T>::back() const {
+    assert(!empty());
     return *(m_data + (m_size - 1));
 }
