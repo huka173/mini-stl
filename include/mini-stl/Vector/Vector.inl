@@ -55,6 +55,21 @@ Vector<T> &Vector<T>::operator=(const Vector<T> &another) & {
 }
 
 template <typename T>
+bool Vector<T>::operator==(const Vector<T> &another) const {
+    if (size() != another.size()) {
+        return false;
+    }
+
+    for (size_t i{}; i < size(); ++i) {
+        if (another[i] != m_data[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template <typename T>
 void Vector<T>::swap(Vector<T> &another) noexcept {
     std::swap(m_data, another.m_data);
     std::swap(m_size, another.m_size);

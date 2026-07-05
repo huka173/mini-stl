@@ -20,6 +20,7 @@ public:
     const T &operator[](size_t index) const;
     T &operator[](size_t index);
     Vector<T> &operator=(const Vector<T> &another) &;
+    bool operator==(const Vector<T> &another) const;
 
     size_t capacity() const;
     size_t size() const;
