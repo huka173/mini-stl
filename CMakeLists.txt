@@ -42,7 +42,8 @@ add_library("mini-stl" INTERFACE)
 target_include_directories("mini-stl" INTERFACE "${CMAKE_SOURCE_DIR}/include/mini-stl/")
 set_cpp_20("mini-stl")
 
-add_subdirectory("example")
+add_subdirectory("example/ExampleVector")
+add_subdirectory("example/ExampleList")
 
 enable_testing()
 add_subdirectory("tests")
