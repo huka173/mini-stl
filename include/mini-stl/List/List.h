@@ -6,7 +6,6 @@
 
 template <typename T>
 class List {
-public:
     Node<T> *m_head;
     Node<T> *m_tail;
     size_t m_size;
@@ -14,6 +13,22 @@ public:
 public:
     List();
     List(const std::initializer_list<T> list);
+
+    void push_back(const T &value);
+    void push_front(const T &value);
+    size_t size() const;
+    bool empty() const;
+
+    T &front() noexcept;
+    const T &front() const noexcept;
+    T &back() noexcept;
+    const T &back() const noexcept;
+
+    Node<T> *begin() noexcept;
+    const Node<T> *begin() const noexcept;
+
+    Node<T> *end() noexcept;
+    const Node<T> *end() const noexcept;
 
     ~List();
 };

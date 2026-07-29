@@ -5,35 +5,13 @@ List<T>::List() :
     m_size{} {}
 
 template <typename T>
-List<T>::List(const std::initializer_list<T> list) {    
-    if (list.size() == 1) {
-        m_head = new Node<T>{ *(list.begin()), nullptr, nullptr };
-        m_tail = nullptr;
-    } else if (list.size() == 2) {
-        m_head = new Node<T>{ *(list.begin()), nullptr, nullptr };
-        m_tail = new Node<T>{ *(list.end() - 1), nullptr, nullptr };
-        m_head->next = m_tail;
-        m_tail->prev = m_head;
-    } else {
-        m_head = new Node<T>{ *(list.begin()), nullptr, nullptr };
-        Node<T> *current{ m_head };
-
-        for (auto it{ list.begin() + 1 }; it != list.end(); ++it) {
-            if (it == list.end() - 1) {
-                m_tail = new Node<T>{ *it, nullptr, nullptr };
-                m_tail->prev = current;
-                current->next = m_tail;
-                break;
-            }
-
-            Node<T> *node{ new Node<T>{ *it, nullptr, nullptr } };
-            current->next = node;
-            node->prev = current;
-            current = node;
-        }
+List<T>::List(const std::initializer_list<T> list) :
+    m_head{ nullptr },
+    m_tail{ nullptr },
+    m_size{} {
+    for (const auto &elem : list) {
+        push_back(elem);
     }
-
-    m_size = list.size();
 }
 
 template <typename T>
@@ -44,4 +22,84 @@ List<T>::~List() {
         delete current;
         current = nextNode;
     }
+}
+
+template <typename T>
+void List<T>::push_back(const T &value) {
+    Node<T> *node{ new Node<T>{value, nullptr, nullptr} };
+    if (m_head == nullptr) {
+        m_head = node;
+        m_tail = node;
+    } else {
+        m_tail->next = node;
+        node->prev = m_tail;
+        m_tail = node;
+    }
+
+    ++m_size;
+}
+
+template <typename T>
+void List<T>::push_front(const T &value) {
+    Node<T> *node{ new Node<T>{value, nullptr, nullptr} };
+    if (m_head == nullptr) {
+        m_head = node;
+        m_tail = node;
+    } else {
+        m_head->prev = node;
+        node->next = m_head;
+        m_head = node;
+    }
+
+    ++m_size;
+}
+
+template <typename T>
+size_t List<T>::size() const {
+    return m_size;
+}
+
+template <typename T>
+bool List<T>::empty() const {
+    return m_size == 0;
+}
+
+template <typename T>
+T &List<T>::front() noexcept {
+    return m_head->value;
+}
+
+template <typename T>
+const T &List<T>::front() const noexcept {
+    return m_head->value;
+}
+
+template <typename T>
+T &List<T>::back() noexcept {
+    return m_tail->value;
+}
+
+template <typename T>
+const T &List<T>::back() const noexcept {
+    return m_tail->value;
+}
+
+template <typename T>
+Node<T> *List<T>::begin() noexcept {
+    return m_head;
+}
+
+template <typename T>
+const Node<T> *List<T>::begin() const noexcept {
+    return m_head;
+}
+
+template <typename T>
+Node<T> *List<T>::end() noexcept {
+    return m_tail;
+}
+
+template <typename T>
+const Node<T> *List<T>::end() const noexcept {
+    return m_tail;
 }

@@ -3,13 +3,11 @@
 #include "List/Node.h"
 
 int main() {
-    List<int> list{ 1, 2 };
+    List<int> list;
+    list.push_front(1);
+    list.push_front(2);
+    std::cout << list.back() << std::endl;
 
-    Node<int> *ptr{ list.m_tail };
-    while (ptr != nullptr) {
-        std::cout << ptr->value << " ";
-        ptr = ptr->prev;
-    }
 
     return 0;
 }
