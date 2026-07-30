@@ -3,11 +3,9 @@
 #include "List/Node.h"
 
 int main() {
-    List<int> list;
-    list.push_front(1);
-    list.push_front(2);
-    std::cout << list.back() << std::endl;
-
+    List<int> list{ 1, 2 };
+    list.pop_front();
+    std::cout << list.end()->value;
 
     return 0;
 }

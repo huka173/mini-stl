@@ -1,10 +1,10 @@
 cmake_minimum_required( VERSION 3.12 )
 
-add_executable("TestVector" "TestVector/TestVector.cpp")
+add_executable("Test" "TestVector/TestVector.cpp" "TestList/TestList.cpp")
 
-target_include_directories("TestVector" PRIVATE "${CMAKE_SOURCE_DIR}/include/mini-stl")
-target_link_libraries("TestVector" INTERFACE "mini-stl")
-set_cpp_20("TestVector")
+target_include_directories("Test" PRIVATE "${CMAKE_SOURCE_DIR}/include/mini-stl")
+target_link_libraries("Test" INTERFACE "mini-stl")
+set_cpp_20("Test")
 
 include(FetchContent)
 FetchContent_Declare(
@@ -14,7 +14,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-target_link_libraries("TestVector" PRIVATE GTest::gtest_main)
+target_link_libraries("Test" PRIVATE GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests("TestVector")
+gtest_discover_tests("Test")

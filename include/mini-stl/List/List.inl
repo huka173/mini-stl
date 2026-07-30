@@ -103,3 +103,45 @@ template <typename T>
 const Node<T> *List<T>::end() const noexcept {
     return m_tail;
 }
+
+template <typename T>
+void List<T>::pop_back() {
+    if (m_size == 1) {
+        delete m_head;
+        m_head = nullptr;
+        m_tail = nullptr;
+        m_size = 0;
+    } else if (m_size >= 2) {
+        Node<T> *lastElem{ m_tail };
+        m_tail = lastElem->prev;
+        m_tail->next = nullptr;
+        delete lastElem;
+        --m_size;
+    }
+}
+
+template <typename T>
+void List<T>::pop_front() {
+    if (m_size == 1) {
+        pop_back();
+    } else if (m_size >= 2) {
+        Node<T> *firstElem{ m_head };
+        m_head = firstElem->next;
+        m_head->prev = nullptr;
+        delete firstElem;
+        --m_size;
+    }
+}
+
+template <typename T>
+void List<T>::clear() {
+    Node<T> *current{ m_head };
+    while (current != nullptr) {
+        Node<T> *nextNode{ current->next };
+        delete current;
+        current = nextNode;
+    }
+    m_head = nullptr;
+    m_tail = nullptr;
+    m_size = 0;
+}

@@ -30,6 +30,10 @@ public:
     Node<T> *end() noexcept;
     const Node<T> *end() const noexcept;
 
+    void pop_back();
+    void pop_front();
+    void clear();
+
     ~List();
 };
 
