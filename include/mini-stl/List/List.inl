@@ -145,3 +145,61 @@ void List<T>::clear() {
     m_tail = nullptr;
     m_size = 0;
 }
+
+template <typename T>
+List<T>::List(const List<T> &copy) {
+    if (copy.m_size == 0) {
+        m_head = nullptr;
+        m_tail = nullptr;
+        m_size = 0;
+    } else {
+        m_head = new Node<T>{ copy.m_head->value };
+        m_size = copy.m_size;
+
+        Node<T> *current{ m_head };
+        for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
+            Node<T> *node{ new Node<T>{ it->value } };
+            current->next = node;
+            node->prev = current;
+
+            current = node;
+        }
+
+        m_tail = current;
+    }
+}
+
+template <typename T>
+List<T> &List<T>::operator=(const List<T> &copy) {
+    if (this == &copy) {
+        return *this;
+    }
+
+    if (m_size != 0) {
+        this->clear();
+    }
+
+    if (copy.m_size == 0) {
+        m_head = nullptr;
+        m_tail = nullptr;
+        m_size = 0;
+
+        return *this;
+    }
+
+    m_head = new Node<T>{ copy.m_head->value };
+    m_size = copy.m_size;
+
+    Node<T> *current{ m_head };
+    for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
+        Node<T> *node{ new Node<T>{ it->value } };
+        current->next = node;
+        node->prev = current;
+
+        current = node;
+    }
+
+    m_tail = current;
+
+    return *this;
+}

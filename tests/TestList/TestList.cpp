@@ -85,3 +85,33 @@ TEST(List, TestBackwardDirection) {
         ASSERT_EQ(assertArr[i], it->value);
     }
 }
+
+TEST(List, TestCopyCtor) {
+    List<int> list{1, 2, 3}; 
+    {
+        List<int> newList{ list };
+        EXPECT_EQ(newList.size(), list.size());
+
+        newList.push_back(4);
+        EXPECT_EQ(newList.front(), 1);
+        EXPECT_EQ(newList.back(), 4);
+        newList.push_front(2);
+        EXPECT_EQ(newList.front(), 2);
+        EXPECT_EQ(newList.size(), 5);
+    }
+    EXPECT_EQ(list.size(), 3);
+}
+
+TEST(List, TestCopyOperator) {
+    List<int> list{ 1, 2, 3 };
+    list = list;
+    List<int> newList{ list };
+    newList = newList;
+    newList.push_front(33);
+    newList.push_back(22);
+    EXPECT_EQ(list.front(), 1);
+    EXPECT_EQ(newList.front(), 33);
+    EXPECT_EQ(list.back(), 3);
+    EXPECT_EQ(newList.back(), 22);
+    EXPECT_NE(newList.size(), list.size());
+}

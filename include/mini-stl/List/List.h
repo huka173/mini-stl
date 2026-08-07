@@ -13,6 +13,9 @@ class List {
 public:
     List();
     List(const std::initializer_list<T> list);
+    List(const List<T> &copy);
+
+    List<T> &operator=(const List<T> &copy);
 
     void push_back(const T &value);
     void push_front(const T &value);
