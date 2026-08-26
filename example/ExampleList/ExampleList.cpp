@@ -6,9 +6,9 @@ int main() {
     List<int> a{ 1,2,3 };
     List<int> b;
 
-    a = b;
+    b = a;
 
-    for (auto *it{ a.begin() }; it != nullptr; it = it->next) {
+    for (auto *it{ b.begin() }; it != nullptr; it = it->next) {
         std::cout << it->value << " ";
     }
 
