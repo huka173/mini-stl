@@ -1,7 +1,37 @@
 template <typename Key, typename Value>
 HashMap<Key, Value>::HashMap() :
-    m_size{ 5 }, 
+    m_size{}, 
     m_bucketCount{ 8 } {
-    m_buckets.reserve(m_size);
-    m_buckets.resize(m_size);
+    m_buckets.resize(m_bucketCount);
+}
+
+template <typename Key, typename Value>
+bool HashMap<Key, Value>::findKeyInMap(const Key& key, size_t index) {
+    for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
+        if ((it->value).key == key) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <typename Key, typename Value>
+void HashMap<Key, Value>::insert(const Key &key, const Value &value) {
+    size_t index{ hash(key) % m_bucketCount };
+ 
+    if (findKeyInMap(key, index)) {
+        for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
+            if ((it->value).key == key) {
+                (it->value).value = value;
+            }
+        }
+    } else {
+        m_buckets[index].push_back(HashNode<Key, Value>{key, value});
+        ++m_size;
+    }
+}
+
+template <typename Key, typename Value>
+size_t HashMap<Key, Value>::size() const {
+    return m_size;
 }

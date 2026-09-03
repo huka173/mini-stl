@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "List/List.h"
+
 TEST(List, TestInitializerList) {
     List<int> list{ 1, 2, 3, 4 };
     ASSERT_EQ(list.size(), 4);

@@ -8,14 +8,17 @@
 
 template <typename Key, typename Value>
 class HashMap {
-public:
     Vector<List<HashNode<Key, Value>>> m_buckets;
     size_t m_size;
     size_t m_bucketCount;
 
+    bool findKeyInMap(const Key &key, size_t index);
+
 public:
     HashMap();
+    void insert(const Key &key, const Value &value);
 
+    size_t size() const;
 };
 
 #include "HashMap.inl"
