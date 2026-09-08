@@ -12,11 +12,14 @@ class HashMap {
     size_t m_size;
     size_t m_bucketCount;
 
-    bool findKeyInMap(const Key &key, size_t index);
+    bool findKeyInMap(const Key &key, size_t index) const;
 
 public:
     HashMap();
     void insert(const Key &key, const Value &value);
+
+    HashNode<Key, Value> *find(const Key &key);
+    const HashNode<Key, Value> *find(const Key &key) const;
 
     size_t size() const;
 };

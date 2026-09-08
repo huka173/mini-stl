@@ -1,12 +1,12 @@
 template <typename Key, typename Value>
 HashMap<Key, Value>::HashMap() :
-    m_size{}, 
+    m_size{},
     m_bucketCount{ 8 } {
     m_buckets.resize(m_bucketCount);
 }
 
 template <typename Key, typename Value>
-bool HashMap<Key, Value>::findKeyInMap(const Key& key, size_t index) {
+bool HashMap<Key, Value>::findKeyInMap(const Key &key, size_t index) const {
     for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
         if ((it->value).key == key) {
             return true;
@@ -18,7 +18,7 @@ bool HashMap<Key, Value>::findKeyInMap(const Key& key, size_t index) {
 template <typename Key, typename Value>
 void HashMap<Key, Value>::insert(const Key &key, const Value &value) {
     size_t index{ hash(key) % m_bucketCount };
- 
+
     if (findKeyInMap(key, index)) {
         for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
             if ((it->value).key == key) {
@@ -34,4 +34,30 @@ void HashMap<Key, Value>::insert(const Key &key, const Value &value) {
 template <typename Key, typename Value>
 size_t HashMap<Key, Value>::size() const {
     return m_size;
+}
+
+template <typename Key, typename Value>
+HashNode<Key, Value> *HashMap<Key, Value>::find(const Key &key) {
+    size_t index{ hash(key) % m_bucketCount };
+
+    for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
+        if (it->value.key == key) {
+            return &it->value;
+        }
+    }
+
+    return nullptr;
+}
+
+template <typename Key, typename Value>
+const HashNode<Key, Value> *HashMap<Key, Value>::find(const Key &key) const {
+    size_t index{ hash(key) % m_bucketCount };
+
+    for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
+        if (it->value.key == key) {
+            return &it->value;
+        }
+    }
+    
+    return nullptr;
 }
