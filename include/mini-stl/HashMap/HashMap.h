@@ -22,6 +22,8 @@ public:
     const HashNode<Key, Value> *find(const Key &key) const;
 
     size_t size() const;
+
+    Value &operator[](const Key &key);
 };
 
 #include "HashMap.inl"

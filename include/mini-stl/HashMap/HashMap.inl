@@ -61,3 +61,14 @@ const HashNode<Key, Value> *HashMap<Key, Value>::find(const Key &key) const {
     
     return nullptr;
 }
+
+template <typename Key, typename Value>
+Value &HashMap<Key, Value>::operator[](const Key &key) {
+    auto *node{ find(key) };
+    if (node) {
+        return node->value;
+    }
+    
+    insert(key, Value{});
+    return find(key)->value;
+}   

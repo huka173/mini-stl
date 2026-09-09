@@ -3,16 +3,13 @@
 #include <string>
 
 int main() {
-    HashMap<std::string, int> map;
-    map.insert("Hello", 1);
-    map.insert("World", 2);
-    map.insert("Mir", 3);
+    HashMap<std::string, std::string> map;
 
-    std::cout << map.find("Mir")->value << std::endl;
+    map["one"] = "1";
 
-    map.find("Mir")->value = 12;
+    map["two"] = "2";
 
-    std::cout << map.find("Mir")->value;
+    std::cout << map["two"];
 
     return 0;
 }
