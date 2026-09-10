@@ -1,3 +1,5 @@
+#include <iostream>
+
 template <typename T>
 List<T>::List() :
     m_head{ nullptr },
@@ -144,6 +146,36 @@ void List<T>::clear() {
     m_head = nullptr;
     m_tail = nullptr;
     m_size = 0;
+}
+
+template <typename T>
+void List<T>::remove(const T &val) {
+    if (empty()) {
+        return;
+    }
+
+    while(!empty() && m_head->value == val) {
+        pop_front();
+    }
+
+    while (!empty() && m_tail->value == val) {
+        pop_back();
+    }
+
+    Node<T> *current{ m_head };
+    while (current != nullptr) {
+        Node<T> *nextNode{ current->next };
+        Node<T> *prevNode{ current->prev };
+        if (current->value == val) {
+            delete current;
+            --m_size;
+            current = nextNode;
+            current->prev = prevNode;
+            prevNode->next = current;
+        } else {
+            current = nextNode;
+        }
+    }
 }
 
 template <typename T>

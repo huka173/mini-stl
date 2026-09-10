@@ -116,3 +116,54 @@ TEST(List, TestCopyOperator) {
     EXPECT_EQ(newList.back(), 22);
     EXPECT_NE(newList.size(), list.size());
 }
+
+TEST(List, TestRemove) {
+    List<int> a{};
+    a.remove(1);
+    EXPECT_EQ(a.size(), 0);
+
+    a = { 1 };
+    a.remove(1);
+    EXPECT_EQ(a.size(), 0);
+
+    a = { 5, 1 };
+    a.remove(5);
+    EXPECT_EQ(a.front(), 1);
+    EXPECT_EQ(a.back(), 1);
+
+    a = { 1, 5 };
+    a.remove(1);
+    EXPECT_EQ(a.size(), 1);
+
+    a = { 5, 5 };
+    a.remove(5);
+    EXPECT_EQ(a.size(), 0);
+
+    a = { 5, 5, 5 };
+    a.remove(5);
+    EXPECT_EQ(a.size(), 0);
+
+    a = { 1, 5, 2 };
+    a.remove(5);
+    EXPECT_EQ(a.size(), 2);
+    EXPECT_EQ(a.front(), 1);
+    EXPECT_EQ(a.back(), 2);
+    EXPECT_EQ(a.begin()->next->value, 2);
+    EXPECT_EQ(a.end()->prev->value, 1);
+
+    a = { 1, 5, 5, 2 };
+    a.remove(5);
+    EXPECT_EQ(a.size(), 2);
+    EXPECT_EQ(a.front(), 1);
+    EXPECT_EQ(a.back(), 2);
+    EXPECT_EQ(a.begin()->next->value, 2);
+    EXPECT_EQ(a.end()->prev->value, 1);
+
+    a = { 1, 5, 2, 5, 3 };
+    a.remove(5);
+    EXPECT_EQ(a.size(), 3);
+    EXPECT_EQ(a.front(), 1);
+    EXPECT_EQ(a.back(), 3);
+    EXPECT_EQ(a.begin()->next->value, 2);
+    EXPECT_EQ(a.end()->prev->value, 2);
+}

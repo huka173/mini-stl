@@ -36,6 +36,7 @@ public:
     void pop_back();
     void pop_front();
     void clear();
+    void remove(const T &val);
 
     ~List();
 };
