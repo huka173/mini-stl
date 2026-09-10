@@ -179,6 +179,38 @@ void List<T>::remove(const T &val) {
 }
 
 template <typename T>
+void List<T>::erase(const Node<T> *node) {
+    if (empty() || node == nullptr) {
+        return;
+    }
+
+    if (node == m_head) {
+        pop_front();
+        return;
+    }
+
+    if (node == m_tail) {
+        pop_back();
+        return;
+    }
+
+    auto *current{ m_head };
+    while (current != nullptr) {
+        auto *nextNode{ current->next };
+        auto *prevNode{ current->prev };
+        if (current == node) {
+            delete current;
+            --m_size;
+            current = nextNode;
+            current->prev = prevNode;
+            prevNode->next = current;
+        } else {
+            current = nextNode;
+        }
+    }
+}
+
+template <typename T>
 List<T>::List(const List<T> &copy) {
     if (copy.m_size == 0) {
         m_head = nullptr;

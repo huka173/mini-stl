@@ -3,7 +3,7 @@
 #include "List/Node.h"
 
 int main() {
-    List<int> a{ 1,2,3 };
+    List<int> a{ 1, 2, 3 };
     List<int> b;
 
     b = a;

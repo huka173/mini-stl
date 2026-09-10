@@ -167,3 +167,51 @@ TEST(List, TestRemove) {
     EXPECT_EQ(a.begin()->next->value, 2);
     EXPECT_EQ(a.end()->prev->value, 2);
 }
+
+TEST(List, TestErase) {
+    List<int> list{ 1, 2, 3, 4, 5 };
+    list.erase(nullptr);
+    EXPECT_EQ(list.size(), 5);
+
+    list = {};
+    list.erase(list.begin());
+    EXPECT_EQ(list.size(), 0);
+
+    list = { 1, 2, 3, 4, 5 };
+    list.erase(list.begin());
+    EXPECT_EQ(list.size(), 4);
+    EXPECT_EQ(list.front(), 2);
+    EXPECT_EQ(list.begin()->prev, nullptr);
+    EXPECT_EQ(list.begin()->next->value, 3);
+
+    list = { 1, 2, 3, 4, 5 };
+    list.erase(list.end());
+    EXPECT_EQ(list.size(), 4);
+    EXPECT_EQ(list.back(), 4);
+    EXPECT_EQ(list.end()->next, nullptr);
+    EXPECT_EQ(list.end()->prev->value, 3);
+    
+    list = { 1, 2, 3, 4, 5 };
+    auto *middleNode{ list.begin()->next->next };
+    list.erase(middleNode);
+    EXPECT_EQ(list.size(), 4);
+    EXPECT_EQ(list.front(), 1);
+    EXPECT_EQ(list.back(), 5);
+    int i{ 1 };
+    for (auto *it{ list.begin() }; it != nullptr; it = it->next) {
+        EXPECT_EQ(it->value, i);
+        ++i;
+        if (i == 3) {
+            ++i;
+        }
+    }
+
+    i = 5;
+    for (auto *it{ list.end() }; it != nullptr; it = it->prev) {
+        EXPECT_EQ(it->value, i);
+        --i;
+        if (i == 3) {
+            --i;
+        }
+    }
+}

@@ -37,6 +37,7 @@ public:
     void pop_front();
     void clear();
     void remove(const T &val);
+    void erase(const Node<T> *node);
 
     ~List();
 };
