@@ -3,12 +3,21 @@
 #include <string>
 
 int main() {
-    HashMap<std::string, std::string> map;
+    HashMap<std::string, int> map;
 
-    map["one"] = "1";
-    map["two"] = "2";
+    map["one"] = 1;
+    map["two"] = 2;
+    map["three"] = 3;
 
-    std::cout << map["two"];
+    map.erase("one");
+
+    std::cout << "Size: " << map.size() << std::endl;
+    if (map.find("one") == nullptr) {
+        std::cout << "NOT FOUND\n";
+    }
+    std::cout << map["three"] << std::endl;
+    std::cout << map["two"] << std::endl;
+
 
     return 0;
 }

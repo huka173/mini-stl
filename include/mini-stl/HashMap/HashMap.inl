@@ -58,8 +58,20 @@ const HashNode<Key, Value> *HashMap<Key, Value>::find(const Key &key) const {
             return &it->value;
         }
     }
-    
+
     return nullptr;
+}
+
+template <typename Key, typename Value>
+void HashMap<Key, Value>::erase(const Key &key) {
+    size_t index{ hash(key) % m_bucketCount };
+    for (auto it{ m_buckets[index].begin() }; it != nullptr; it = it->next) {
+        if (it->value.key == key) {
+            m_buckets[index].erase(it);
+            --m_size;
+            return;
+        }
+    }
 }
 
 template <typename Key, typename Value>
@@ -68,7 +80,7 @@ Value &HashMap<Key, Value>::operator[](const Key &key) {
     if (node) {
         return node->value;
     }
-    
+
     insert(key, Value{});
     return find(key)->value;
-}   
+}

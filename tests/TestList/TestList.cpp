@@ -214,4 +214,13 @@ TEST(List, TestErase) {
             --i;
         }
     }
+
+    list = { 1, 2 };
+    auto *node = list.begin()->next;
+    list.erase(node);
+    EXPECT_EQ(list.size(), 1);
+    EXPECT_EQ(list.front(), 1);
+    EXPECT_EQ(list.back(), 1);
+    EXPECT_EQ(list.begin()->next, nullptr);
+    EXPECT_EQ(list.end()->prev, nullptr);
 }

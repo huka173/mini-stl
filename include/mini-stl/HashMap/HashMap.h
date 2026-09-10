@@ -23,6 +23,8 @@ public:
 
     size_t size() const;
 
+    void erase(const Key &key);
+
     Value &operator[](const Key &key);
 };
 
