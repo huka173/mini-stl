@@ -13,6 +13,8 @@ class HashMap {
     size_t m_bucketCount;
 
     bool findKeyInMap(const Key &key, size_t index) const;
+    double loadFactor() const;
+    void rehash(size_t newBucketCount);
 
 public:
     HashMap();
@@ -22,6 +24,7 @@ public:
     const HashNode<Key, Value> *find(const Key &key) const;
 
     size_t size() const;
+    size_t bucketCount() const;
 
     void erase(const Key &key);
 
