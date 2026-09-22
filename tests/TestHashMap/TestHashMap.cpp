@@ -90,3 +90,26 @@ TEST(HashMap, TestBucketCountWithRehash) {
         }
     }
 }
+
+TEST(HashMap, TestEraseInCollisionChain) {
+    HashMap<int, int> map;
+    map[1] = 1;
+    map[17] = 17;
+    map[33] = 33;
+
+    EXPECT_EQ(map.size(), 3);
+    EXPECT_EQ(map.find(1)->value, 1);
+    EXPECT_EQ(map.find(17)->value, 17);
+    EXPECT_EQ(map.find(33)->value, 33);
+
+    map.erase(1);
+    EXPECT_EQ(map.size(), 2);
+
+    EXPECT_NE(map.find(17), nullptr);
+    EXPECT_EQ(map.find(17)->value, 17);
+
+    EXPECT_NE(map.find(33), nullptr);
+    EXPECT_EQ(map.find(33)->value, 33);
+
+    EXPECT_EQ(map.find(1), nullptr);
+}
