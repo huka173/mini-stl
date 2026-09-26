@@ -5,16 +5,39 @@
 template <typename T>
 Vector<T>::Vector(size_t size) :
     m_size{ size },
-    m_data{ new T[size]{} },
-    m_capacity{ size } {}
+    m_data{ reinterpret_cast<T *>(new char[size * sizeof(T)]) },
+    m_capacity{ size } {
+    size_t i{};
+    try {
+        for (; i < size; ++i) {
+            new (m_data + i) T{};
+        }
+    } catch (...) {
+        for (size_t j{}; j < i; ++j) {
+            m_data[j].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        throw;
+    }
+}
 
 template <typename T>
 Vector<T>::Vector(size_t size, const T &value) :
     m_size{ size },
     m_capacity{ size },
-    m_data{ new T[size] } {
-    for (size_t i{}; i < m_size; ++i) {
-        m_data[i] = value;
+    m_data{ reinterpret_cast<T *>(new char[size * sizeof(T)]) } {
+
+    size_t i{};
+    try {
+        for (; i < size; ++i) {
+            new (m_data + i) T{ value };
+        }
+    } catch (...) {
+        for (size_t j{}; j < i; ++j) {
+            m_data[j].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        throw;
     }
 }
 
@@ -44,7 +67,11 @@ Vector<T>::Vector(const Vector<T> &another) :
 
 template <typename T>
 Vector<T>::~Vector() {
-    delete[] m_data;
+    for (size_t i{}; i < m_size; ++i) {
+        m_data[i].~T();
+    }
+
+    delete[] reinterpret_cast<char *>(m_data);
 }
 
 template <typename T>
@@ -194,13 +221,27 @@ const T *Vector<T>::data() const noexcept {
 template <typename T>
 void Vector<T>::reserve(size_t n) {
     if (n > m_capacity) {
-        m_capacity = n;
-        T *copy{ new T[m_capacity] };
-        for (size_t i{}; i < m_size; ++i) {
-            copy[i] = m_data[i];
+        T *copy{ reinterpret_cast<T *>(new char[n * sizeof(T)]) };
+
+        size_t index{};
+        try {
+            for (; index < m_size; ++index) {
+                new (copy + index) T{ m_data[index] };
+            }
+        } catch (...) {
+            for (size_t j{}; j < index; ++j) {
+                copy[j].~T();
+            }
+            delete[] reinterpret_cast<char *>(copy);
+            throw;
         }
 
-        delete[] m_data;
+        for (size_t i{}; i < m_size; ++i) {
+            m_data[i].~T();
+        }
+
+        delete[] reinterpret_cast<char *>(m_data);
+        m_capacity = n;
         m_data = copy;
     }
 }
