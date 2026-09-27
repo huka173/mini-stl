@@ -36,6 +36,7 @@ Vector<T>::Vector(size_t size, const T &value) :
         for (size_t j{}; j < i; ++j) {
             m_data[j].~T();
         }
+
         delete[] reinterpret_cast<char *>(m_data);
         throw;
     }
@@ -45,23 +46,41 @@ template <typename T>
 Vector<T>::Vector(const std::initializer_list<T> list) :
     m_size{ list.size() },
     m_capacity{ list.size() },
-    m_data{ new T[list.size()] } {
+    m_data{ reinterpret_cast<T *>(new char[list.size() * sizeof(T)]) } {
 
     size_t index{};
-    for (const auto &elem : list) {
-        m_data[index] = elem;
-        ++index;
+    try {
+        for (const auto &elem : list) {
+            new (m_data + index) T{ elem };
+            ++index;
+        }
+    } catch (...) {
+        for (size_t i{}; i < index; ++i) {
+            m_data[i].~T();
+        }
+
+        delete[] reinterpret_cast<char *>(m_data);
+        throw;
     }
 }
 
 template <typename T>
 Vector<T>::Vector(const Vector<T> &another) :
-    m_data{ new T[another.capacity()] },
+    m_data{ reinterpret_cast<T *>(new char[another.capacity() * sizeof(T)]) },
     m_size{ another.size() },
     m_capacity{ another.capacity() } {
 
-    for (size_t i{}; i < m_size; ++i) {
-        m_data[i] = another.m_data[i];
+    size_t index{};
+    try {
+        for (; index < m_size; ++index) {
+            new (m_data + index) T{ another.m_data[index] };
+        }
+    } catch (...) {
+        for (size_t i{}; i < index; ++i) {
+            m_data[i].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        throw;
     }
 }
 
@@ -150,6 +169,9 @@ bool Vector<T>::empty() const {
 
 template <typename T>
 void Vector<T>::clear() noexcept {
+    for (size_t i{}; i < m_size; ++i) {
+        m_data[i].~T();
+    }
     m_size = 0;
 }
 
@@ -164,15 +186,30 @@ void Vector<T>::erase(size_t start, size_t end) {
     assert(end <= m_size);
 
     size_t diff{ end - start };
-    T *copy{ new T[m_capacity] };
-    for (size_t i{}, k{}; i < m_size; ++i) {
-        if ((i < start) || (i >= end)) {
-            copy[k] = m_data[i];
-            ++k;
+    T *copy{ reinterpret_cast<T *>(new char[m_capacity * sizeof(T)]) };
+
+    size_t i{}, k{};
+    try {
+        for (; i < m_size; ++i) {
+            if ((i < start) || (i >= end)) {
+                new (copy + k) T{ m_data[i] };
+                ++k;
+            }
         }
+    } catch (...) {
+        for (size_t j{}; j < k; ++j) {
+            copy[j].~T();
+        }
+
+        delete[] reinterpret_cast<char *>(copy);
+        throw;
     }
 
-    delete[] m_data;
+    for (size_t i{}; i < m_size; ++i) {
+        m_data[i].~T();
+    }
+
+    delete[] reinterpret_cast<char *>(m_data);
     m_data = copy;
     m_size -= diff;
 }
@@ -180,23 +217,38 @@ void Vector<T>::erase(size_t start, size_t end) {
 template <typename T>
 void Vector<T>::push_back(const T &elem) {
     if (m_size == m_capacity) {
+        size_t newCapacity{};
         if (m_capacity == 0) {
-            m_capacity = 1;
+            newCapacity = 1;
         } else {
-            m_capacity = m_size * 2;
+            newCapacity = m_size * 2;
         }
 
-        T *copy{ new T[m_capacity] };
-        for (size_t i{}; i < m_size; ++i) {
-            copy[i] = m_data[i];
+        T *copy{ reinterpret_cast<T *>(new char[newCapacity * sizeof(T)]) };
+        size_t index{};
+        try {
+            for (; index < m_size; ++index) {
+                new (copy + index) T{ m_data[index] };
+            }
+            new (copy + index) T{ elem };
+        } catch (...) {
+            for (size_t i{}; i < index; ++i) {
+                copy[i].~T();
+            }
+
+            delete[] reinterpret_cast<char *>(copy);
+            throw;
         }
-        copy[m_size] = elem;
         ++m_size;
 
-        delete[] m_data;
+        for (size_t i{}; i < m_size; ++i) {
+            m_data[i].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        m_capacity = newCapacity;
         m_data = copy;
     } else {
-        m_data[m_size] = elem;
+        new (m_data + m_size) T{ elem };
         ++m_size;
     }
 }
@@ -204,6 +256,7 @@ void Vector<T>::push_back(const T &elem) {
 template <typename T>
 void Vector<T>::pop_back() {
     if (m_size != 0) {
+        m_data[m_size - 1].~T();
         --m_size;
     }
 }
@@ -250,23 +303,39 @@ template <typename T>
 void Vector<T>::resize(size_t n, const T &val) {
     if (n > m_size) {
         size_t diff{ n - m_size };
-        m_size = n;
-        if (m_size > m_capacity) {
-            m_capacity = m_size * 2;
-        }
+        size_t newCapacity{ n > m_capacity ? n * 2 : m_capacity };
 
-        T *copy{ new T[m_capacity] };
-        for (size_t i{}; i < m_size; ++i) {
-            if (i < (m_size - diff)) {
-                copy[i] = m_data[i];
-            } else {
-                copy[i] = val;
+        T *copy{ reinterpret_cast<T *>(new char[newCapacity * sizeof(T)]) };
+
+        size_t index{};
+        try {
+            for (; index < n; ++index) {
+                if (index < (n - diff)) {
+                    new (copy + index) T{ m_data[index] };
+                } else {
+                    new (copy + index) T{ val };
+                }
             }
+        } catch (...) {
+            for (size_t i{}; i < index; ++i) {
+                copy[i].~T();
+            }
+
+            delete[] reinterpret_cast<char *>(copy);
+            throw;
         }
 
-        delete[] m_data;
+        for (size_t i{}; i < m_size; ++i) {
+            m_data[i].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        m_size = n;
+        m_capacity = newCapacity;
         m_data = copy;
     } else {
+        for (size_t i{ n }; i < m_size; ++i) {
+            m_data[i].~T();
+        }
         m_size = n;
     }
 }
@@ -279,13 +348,26 @@ void Vector<T>::resize(size_t n) {
 template <typename T>
 void Vector<T>::shrink_to_fit() {
     if (m_capacity > m_size) {
-        m_capacity = m_size;
-        T *copy{ new T[m_capacity] };
-        for (size_t i{}; i < m_size; ++i) {
-            copy[i] = m_data[i];
+        T *copy{ reinterpret_cast<T *>(new char[m_size * sizeof(T)]) };
+        size_t index{};
+        try {
+            for (; index < m_size; ++index) {
+                new (copy + index) T{ m_data[index] };
+            }
+        } catch (...) {
+            for (size_t i{}; i < index; ++i) {
+                copy[i].~T();
+            }
+
+            delete[] reinterpret_cast<char *>(copy);
+            throw;
         }
 
-        delete[] m_data;
+        for (size_t i{}; i < m_size; ++i) {
+            m_data[i].~T();
+        }
+        delete[] reinterpret_cast<char *>(m_data);
+        m_capacity = m_size;
         m_data = copy;
     }
 }
