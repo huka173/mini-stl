@@ -39,6 +39,8 @@ public:
     void remove(const T &val);
     void erase(const Node<T> *node);
 
+    void swap(List<T> &another) noexcept;
+
     ~List();
 };
 

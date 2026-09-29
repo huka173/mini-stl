@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 template <typename T>
 List<T>::List() :
@@ -217,53 +218,42 @@ List<T>::List(const List<T> &copy) {
         m_tail = nullptr;
         m_size = 0;
     } else {
-        m_head = new Node<T>{ copy.m_head->value };
-        m_size = copy.m_size;
+        Node<T> *head{ new Node<T>{ copy.m_head->value } };
+        Node<T> *current{ head };
+        try {
+            for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
+                Node<T> *node{ new Node<T>{ it->value } };
+                current->next = node;
+                node->prev = current;
 
-        Node<T> *current{ m_head };
-        for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
-            Node<T> *node{ new Node<T>{ it->value } };
-            current->next = node;
-            node->prev = current;
-
-            current = node;
+                current = node;
+            }
+        } catch (...) {
+            auto *it{ head };
+            while (it != nullptr) {
+                auto *temp{ it->next };
+                delete it;
+                it = temp;
+            }
+            throw;
         }
-
+        
+        m_head = head;
         m_tail = current;
+        m_size = copy.m_size;
     }
 }
 
 template <typename T>
 List<T> &List<T>::operator=(const List<T> &copy) {
-    if (this == &copy) {
-        return *this;
-    }
-
-    if (m_size != 0) {
-        this->clear();
-    }
-
-    if (copy.m_size == 0) {
-        m_head = nullptr;
-        m_tail = nullptr;
-        m_size = 0;
-
-        return *this;
-    }
-
-    m_head = new Node<T>{ copy.m_head->value };
-    m_size = copy.m_size;
-
-    Node<T> *current{ m_head };
-    for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
-        Node<T> *node{ new Node<T>{ it->value } };
-        current->next = node;
-        node->prev = current;
-
-        current = node;
-    }
-
-    m_tail = current;
-
+    List<T> temp{ copy };
+    swap(temp);
     return *this;
+}
+
+template <typename T>
+void List<T>::swap(List<T> &another) noexcept {
+    std::swap(m_head, another.m_head);
+    std::swap(m_tail, another.m_tail);
+    std::swap(m_size, another.m_size);
 }
