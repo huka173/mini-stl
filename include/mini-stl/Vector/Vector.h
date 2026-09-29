@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <initializer_list>
+#include <type_traits>
 
 template <typename T>
 class Vector {
@@ -9,7 +10,32 @@ class Vector {
     size_t m_size{};
     size_t m_capacity{};
 
+    template <bool notConst>
+    class BaseIterator {
+    public:
+        using ptr_type = std::conditional_t<notConst, T *, const T *>;
+        using ref_type = std::conditional_t<notConst, T &, const T &>;
+    private:
+        ptr_type m_ptr;
+    public:
+        BaseIterator(ptr_type ptr);
+        BaseIterator(const BaseIterator &) = default;
+        BaseIterator &operator=(const BaseIterator &) = default;
+
+        ref_type operator*() const;
+        ptr_type operator->() const;
+
+        BaseIterator &operator++();
+        BaseIterator operator++(int);
+
+        bool operator!=(const BaseIterator &it) const;
+        bool operator==(const BaseIterator &it) const;
+    };
+
 public:
+    using Iterator = BaseIterator<true>;
+    using ConstIterator = BaseIterator<false>;
+    
     Vector() = default;
     explicit Vector(size_t size);
     Vector(size_t size, const T &value);
@@ -48,6 +74,14 @@ public:
     const T &front() const;
     T &back();
     const T &back() const;
+
+    Iterator begin();
+    ConstIterator begin() const;
+    ConstIterator cbegin() const;
+
+    Iterator end();
+    ConstIterator end() const;
+    ConstIterator cend() const;
 };
 
 #include "Vector.inl";

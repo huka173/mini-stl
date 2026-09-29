@@ -395,3 +395,76 @@ const T &Vector<T>::back() const {
     assert(!empty());
     return *(m_data + (m_size - 1));
 }
+
+template <typename T>
+Vector<T>::Iterator Vector<T>::begin() {
+    return Iterator{ m_data };
+}
+
+template <typename T>
+Vector<T>::Iterator Vector<T>::end() {
+    return Iterator{ m_data + m_size };
+}
+
+template <typename T>
+Vector<T>::ConstIterator Vector<T>::begin() const {
+    return ConstIterator{ m_data };
+}
+
+template <typename T>
+Vector<T>::ConstIterator Vector<T>::end() const {
+    return ConstIterator{ m_data + m_size };
+}
+
+template <typename T>
+Vector<T>::ConstIterator Vector<T>::cbegin() const {
+    return ConstIterator{ m_data };
+}
+
+template <typename T>
+Vector<T>::ConstIterator Vector<T>::cend() const {
+    return ConstIterator{ m_data + m_size };
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst>::BaseIterator(ptr_type ptr) : m_ptr{ ptr } {}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst>::ref_type Vector<T>::BaseIterator<notConst>::operator*() const {
+    return *m_ptr;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> &Vector<T>::BaseIterator<notConst>::operator++() {
+    ++m_ptr;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> Vector<T>::BaseIterator<notConst>::operator++(int) {
+    BaseIterator copy{ *this };
+    ++m_ptr;
+    return copy;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst>::ptr_type Vector<T>::BaseIterator<notConst>::operator->() const {
+    return m_ptr;
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator==(const BaseIterator &it) const {
+    return m_ptr == it.m_ptr;
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator!=(const BaseIterator &it) const {
+    return !(m_ptr == (it.m_ptr));
+}
