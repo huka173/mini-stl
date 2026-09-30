@@ -15,8 +15,10 @@ class Vector {
     public:
         using ptr_type = std::conditional_t<notConst, T *, const T *>;
         using ref_type = std::conditional_t<notConst, T &, const T &>;
+
     private:
         ptr_type m_ptr;
+
     public:
         BaseIterator(ptr_type ptr);
         BaseIterator(const BaseIterator &) = default;
@@ -28,7 +30,27 @@ class Vector {
         BaseIterator &operator++();
         BaseIterator operator++(int);
 
+        BaseIterator &operator--();
+        BaseIterator operator--(int);
+
+        BaseIterator operator+(int number) const;
+        friend BaseIterator operator+(int number, const BaseIterator &it) {
+            return it + number;
+        }
+
+        BaseIterator operator-(int number) const;
+        int operator-(const BaseIterator &it) const;
+
+        BaseIterator &operator+=(int number);
+        BaseIterator &operator-=(int number);
+
+        ref_type operator[](size_t index) const;
+
         bool operator!=(const BaseIterator &it) const;
+        bool operator<(const BaseIterator &it) const;
+        bool operator>(const BaseIterator &it) const;
+        bool operator>=(const BaseIterator &it) const;
+        bool operator<=(const BaseIterator &it) const;
         bool operator==(const BaseIterator &it) const;
     };
 

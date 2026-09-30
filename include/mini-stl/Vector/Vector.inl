@@ -468,3 +468,80 @@ template <bool notConst>
 bool Vector<T>::BaseIterator<notConst>::operator!=(const BaseIterator &it) const {
     return !(m_ptr == (it.m_ptr));
 }
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> &Vector<T>::BaseIterator<notConst>::operator--() {
+    --m_ptr;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> Vector<T>::BaseIterator<notConst>::operator--(int) {
+    BaseIterator copy{ *this };
+    --m_ptr;
+    return copy;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> &Vector<T>::BaseIterator<notConst>::operator+=(int number) {
+    m_ptr = m_ptr + number;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> Vector<T>::BaseIterator<notConst>::operator+(int number) const {
+    return BaseIterator<notConst>{ m_ptr + number };
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> &Vector<T>::BaseIterator<notConst>::operator-=(int number) {
+    m_ptr = m_ptr - number;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst> Vector<T>::BaseIterator<notConst>::operator-(int number) const {
+    return BaseIterator<notConst>{ m_ptr - number };
+}
+
+template <typename T>
+template <bool notConst>
+int Vector<T>::BaseIterator<notConst>::operator-(const BaseIterator &it) const {
+    return m_ptr - it.m_ptr;
+}
+
+template <typename T>
+template <bool notConst>
+Vector<T>::BaseIterator<notConst>::ref_type Vector<T>::BaseIterator<notConst>::operator[](size_t index) const {
+    return *(m_ptr + index);
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator<(const BaseIterator &it) const {
+    return (it.m_ptr - m_ptr) > 0;
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator>(const BaseIterator &it) const {
+    return it < *this;
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator>=(const BaseIterator &it) const {
+    return !(*this < it);
+}
+
+template <typename T>
+template <bool notConst>
+bool Vector<T>::BaseIterator<notConst>::operator<=(const BaseIterator &it) const {
+    return !(*this > it);
+}
