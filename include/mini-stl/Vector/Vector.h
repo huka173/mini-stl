@@ -1,6 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <cstddef>
 #include <initializer_list>
 #include <type_traits>
 
@@ -106,6 +107,6 @@ public:
     ConstIterator cend() const;
 };
 
-#include "Vector.inl";
+#include "Vector.inl"
 
 #endif // VECTOR_H

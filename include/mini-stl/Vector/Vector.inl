@@ -44,9 +44,9 @@ Vector<T>::Vector(size_t size, const T &value) :
 
 template <typename T>
 Vector<T>::Vector(const std::initializer_list<T> list) :
+    m_data{ reinterpret_cast<T *>(new char[list.size() * sizeof(T)]) },
     m_size{ list.size() },
-    m_capacity{ list.size() },
-    m_data{ reinterpret_cast<T *>(new char[list.size() * sizeof(T)]) } {
+    m_capacity{ list.size() } {
 
     size_t index{};
     try {

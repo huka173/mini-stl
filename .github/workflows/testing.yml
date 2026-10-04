@@ -16,6 +16,8 @@ jobs:
             build_type: Release
           - os: windows-latest
             build_type: Release
+          - os: windows-latest
+            build_type: Debug
 
     steps:
       - uses: actions/checkout@v4
