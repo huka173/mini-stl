@@ -4,6 +4,7 @@ add_executable("Test"
     "TestVector/TestVector.cpp" 
     "TestVector/TestVectorIterator.cpp" 
     "TestList/TestList.cpp" 
+    "TestList/TestListIterator.cpp" 
     "TestHashMap/TestHashMap.cpp"
 )
 

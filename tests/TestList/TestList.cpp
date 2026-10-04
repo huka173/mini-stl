@@ -21,6 +21,12 @@ TEST(List, TestPopBack) {
     EXPECT_EQ(list.back(), 2);
     list.pop_back();
     EXPECT_EQ(list.back(), 1);
+    list.pop_back();
+    EXPECT_EQ(list.size(), 0);
+    list.push_back(1);
+    EXPECT_EQ(list.size(), 1);
+    EXPECT_EQ(list.back(), 1);
+    EXPECT_EQ(list.front(), 1);
 }
 
 TEST(List, TestSize) {
@@ -65,6 +71,10 @@ TEST(List, TestPopFront) {
     EXPECT_EQ(list.front(), 3);
     list.pop_front();
     EXPECT_EQ(list.size(), 0);
+    list.push_back(1);
+    EXPECT_EQ(list.size(), 1);
+    EXPECT_EQ(list.back(), 1);
+    EXPECT_EQ(list.front(), 1);
 }
 
 TEST(List, TestForwardDirection) {
@@ -72,8 +82,8 @@ TEST(List, TestForwardDirection) {
     int assertArr[3]{ 22, 33, 44 };
 
     size_t i{};
-    for (auto *it{ list.begin() }; it != nullptr; it = it->next, ++i) {
-        EXPECT_EQ(assertArr[i], it->value);
+    for (auto it{ list.begin() }; it != list.end(); ++it, ++i) {
+        EXPECT_EQ(assertArr[i], *it);
     }
 }
 
@@ -82,8 +92,8 @@ TEST(List, TestBackwardDirection) {
     int assertArr[3]{ 22, 33, 44 };
 
     int i{ 2 };
-    for (auto *it{ list.end() }; it != nullptr; it = it->prev, --i) {
-        ASSERT_EQ(assertArr[i], it->value);
+    for (auto it{ --(list.end()) }; it != list.end(); --it, --i) {
+        ASSERT_EQ(assertArr[i], *it);
     }
 }
 
@@ -148,29 +158,29 @@ TEST(List, TestRemove) {
     EXPECT_EQ(a.size(), 2);
     EXPECT_EQ(a.front(), 1);
     EXPECT_EQ(a.back(), 2);
-    EXPECT_EQ(a.begin()->next->value, 2);
-    EXPECT_EQ(a.end()->prev->value, 1);
+    EXPECT_EQ(*(++(a.begin())), 2);
+    EXPECT_EQ(*(--(--a.end())), 1);
 
     a = { 1, 5, 5, 2 };
     a.remove(5);
     EXPECT_EQ(a.size(), 2);
     EXPECT_EQ(a.front(), 1);
     EXPECT_EQ(a.back(), 2);
-    EXPECT_EQ(a.begin()->next->value, 2);
-    EXPECT_EQ(a.end()->prev->value, 1);
+    EXPECT_EQ(*(++(a.begin())), 2);
+    EXPECT_EQ(*(--(--(a.end()))), 1);
 
     a = { 1, 5, 2, 5, 3 };
     a.remove(5);
     EXPECT_EQ(a.size(), 3);
     EXPECT_EQ(a.front(), 1);
     EXPECT_EQ(a.back(), 3);
-    EXPECT_EQ(a.begin()->next->value, 2);
-    EXPECT_EQ(a.end()->prev->value, 2);
+    EXPECT_EQ(*(++(a.begin())), 2);
+    EXPECT_EQ(*(--(--(a.end()))), 2);
 }
 
 TEST(List, TestErase) {
     List<int> list{ 1, 2, 3, 4, 5 };
-    list.erase(nullptr);
+    list.erase(list.end());
     EXPECT_EQ(list.size(), 5);
 
     list = {};
@@ -181,25 +191,24 @@ TEST(List, TestErase) {
     list.erase(list.begin());
     EXPECT_EQ(list.size(), 4);
     EXPECT_EQ(list.front(), 2);
-    EXPECT_EQ(list.begin()->prev, nullptr);
-    EXPECT_EQ(list.begin()->next->value, 3);
+    EXPECT_EQ(--(list.begin()), list.end());
+    EXPECT_EQ(*(++(list.begin())), 3);
 
     list = { 1, 2, 3, 4, 5 };
-    list.erase(list.end());
+    list.erase(--(list.end()));
     EXPECT_EQ(list.size(), 4);
     EXPECT_EQ(list.back(), 4);
-    EXPECT_EQ(list.end()->next, nullptr);
-    EXPECT_EQ(list.end()->prev->value, 3);
+    EXPECT_EQ(*(--(--list.end())), 3);
     
     list = { 1, 2, 3, 4, 5 };
-    auto *middleNode{ list.begin()->next->next };
+    auto middleNode{ (++(++list.begin())) };
     list.erase(middleNode);
     EXPECT_EQ(list.size(), 4);
     EXPECT_EQ(list.front(), 1);
     EXPECT_EQ(list.back(), 5);
     int i{ 1 };
-    for (auto *it{ list.begin() }; it != nullptr; it = it->next) {
-        EXPECT_EQ(it->value, i);
+    for (auto it{ list.begin() }; it != list.end(); ++it) {
+        EXPECT_EQ(*it, i);
         ++i;
         if (i == 3) {
             ++i;
@@ -207,8 +216,8 @@ TEST(List, TestErase) {
     }
 
     i = 5;
-    for (auto *it{ list.end() }; it != nullptr; it = it->prev) {
-        EXPECT_EQ(it->value, i);
+    for (auto it{ --(list.end()) }; it != list.end(); --it) {
+        EXPECT_EQ(*it, i);
         --i;
         if (i == 3) {
             --i;
@@ -216,11 +225,22 @@ TEST(List, TestErase) {
     }
 
     list = { 1, 2 };
-    auto *node = list.begin()->next;
+    auto node = ++list.begin();
     list.erase(node);
     EXPECT_EQ(list.size(), 1);
     EXPECT_EQ(list.front(), 1);
     EXPECT_EQ(list.back(), 1);
-    EXPECT_EQ(list.begin()->next, nullptr);
-    EXPECT_EQ(list.end()->prev, nullptr);
+}
+
+TEST(List, TestMainNode) {
+    List<int> list;
+
+    EXPECT_EQ(list.begin(), list.end());
+
+    list.push_back(1);
+
+    EXPECT_EQ(*(list.begin()), 1);
+    EXPECT_EQ(*(--(list.end())), 1);
+    EXPECT_EQ(--(list.begin()), list.end());
+    EXPECT_EQ(++(list.end()), list.begin());
 }
