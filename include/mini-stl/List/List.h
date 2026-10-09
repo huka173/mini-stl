@@ -22,7 +22,7 @@ class List {
         node_ptr_type m_ptr;
 
     public:
-        BaseIterator(node_ptr_type ptr);
+        BaseIterator(node_ptr_type ptr = nullptr);
         BaseIterator(const BaseIterator &) = default;
         BaseIterator &operator=(const BaseIterator &) = default;
 

@@ -6,6 +6,7 @@ add_executable("Test"
     "TestList/TestList.cpp" 
     "TestList/TestListIterator.cpp" 
     "TestHashMap/TestHashMap.cpp"
+    "TestHashMap/TestHashMapIterator.cpp"
 )
 
 target_include_directories("Test" PRIVATE "${CMAKE_SOURCE_DIR}/include/mini-stl")

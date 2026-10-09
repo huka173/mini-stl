@@ -21,7 +21,7 @@ class Vector {
         ptr_type m_ptr;
 
     public:
-        BaseIterator(ptr_type ptr);
+        BaseIterator(ptr_type ptr = nullptr);
         BaseIterator(const BaseIterator &) = default;
         BaseIterator &operator=(const BaseIterator &) = default;
 

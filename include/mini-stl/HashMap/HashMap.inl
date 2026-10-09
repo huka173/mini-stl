@@ -6,6 +6,16 @@ HashMap<Key, Value>::HashMap() :
 }
 
 template <typename Key, typename Value>
+HashMap<Key, Value>::HashMap(const std::initializer_list<HashNode<Key, Value>> list) :
+    m_size{},
+    m_bucketCount{ 16 } {
+    m_buckets.resize(m_bucketCount);
+    for (const auto &elem : list) {
+        insert(elem.key, elem.value);
+    }
+}
+
+template <typename Key, typename Value>
 bool HashMap<Key, Value>::findKeyInMap(const Key &key, size_t index) const {
     for (auto it{ m_buckets[index].begin() }; it != m_buckets[index].end(); ++it) {
         if (it->key == key) {
@@ -112,4 +122,133 @@ Value &HashMap<Key, Value>::operator[](const Key &key) {
 
     insert(key, Value{});
     return find(key)->value;
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::Iterator HashMap<Key, Value>::begin() {
+    for (auto it = m_buckets.begin(); it != m_buckets.end(); ++it) {
+        if (!((*it).empty())) {
+            return Iterator{ it, (*it).begin(), m_buckets.end(), (*it).end() };
+        }
+    }
+    return end();
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::ConstIterator HashMap<Key, Value>::begin() const {
+    for (auto it = m_buckets.begin(); it != m_buckets.end(); ++it) {
+        if (!((*it).empty())) {
+            return ConstIterator{ it, (*it).begin(), m_buckets.end(), (*it).end() };
+        }
+    }
+    return end();
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::ConstIterator HashMap<Key, Value>::cbegin() const {
+    for (auto it = m_buckets.begin(); it != m_buckets.end(); ++it) {
+        if (!((*it).empty())) {
+            return ConstIterator{ it, (*it).begin(), m_buckets.end(), (*it).end() };
+        }
+    }
+    return end();
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::Iterator HashMap<Key, Value>::end() {
+    return Iterator{ 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::Iterator{}, 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::Iterator{} 
+    };
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::ConstIterator HashMap<Key, Value>::end() const {
+    return ConstIterator{ 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::ConstIterator{}, 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::ConstIterator{} 
+    };
+}
+
+template <typename Key, typename Value>
+HashMap<Key, Value>::ConstIterator HashMap<Key, Value>::cend() const {
+    return ConstIterator{ 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::ConstIterator{}, 
+        m_buckets.end(), 
+        typename List<HashNode<Key, Value>>::ConstIterator{} 
+    };
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst>::BaseIterator(
+    VectorIterator vectorIterator,
+    ListIterator listIterator,
+    VectorIterator endVectorIterator,
+    ListIterator endListIterator
+) :
+    m_vectorIterator{ vectorIterator },
+    m_listIterator{ listIterator },
+    m_endVectorIterator{ endVectorIterator },
+    m_endListIterator{ endListIterator } {}
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst>::ref_HashNode HashMap<Key, Value>::BaseIterator<notConst>::operator*() const {
+    return *m_listIterator;
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst>::ptr_HashNode HashMap<Key, Value>::BaseIterator<notConst>::operator->() const {
+    return &(*m_listIterator);
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+bool HashMap<Key, Value>::BaseIterator<notConst>::operator==(const BaseIterator &it) const {
+    return m_vectorIterator == it.m_vectorIterator
+        && (m_vectorIterator == m_endVectorIterator || m_listIterator == it.m_listIterator);
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+bool HashMap<Key, Value>::BaseIterator<notConst>::operator!=(const BaseIterator &it) const {
+    return !(*this == it);
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst> &HashMap<Key, Value>::BaseIterator<notConst>::operator++() {
+    if (++m_listIterator != m_endListIterator) {
+        return *this;
+    }
+
+    ++m_vectorIterator;
+    while ((m_vectorIterator != m_endVectorIterator) && (*m_vectorIterator).empty()) {
+        ++m_vectorIterator;
+    }
+
+    if (m_vectorIterator != m_endVectorIterator) {
+        m_listIterator = (*m_vectorIterator).begin();
+        m_endListIterator = (*m_vectorIterator).end();
+    } else {
+        m_listIterator = ListIterator{};
+        m_vectorIterator = m_endVectorIterator;
+    }
+
+    return *this;
+}
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst> HashMap<Key, Value>::BaseIterator<notConst>::operator++(int) {
+    BaseIterator copy{ *this };
+    ++(*this);
+    return copy;
 }

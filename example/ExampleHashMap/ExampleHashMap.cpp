@@ -3,22 +3,15 @@
 #include <string>
 
 int main() {
-    HashMap<std::string, int> map;
+    HashMap<int, int> map {
+        {100, 1},
+        {200, 2},
+        {300, 3}
+    };
 
-    map["one"] = 1;
-    map["two"] = 2;
-    map["three"] = 3;
-
-    map.erase("one");
-
-    std::cout << "Size: " << map.size() << std::endl;
-
-    if (map.find("one") == nullptr) {
-        std::cout << "NOT FOUND\n";
+    for (auto it = map.begin(); it != map.end(); ++it) {
+        std::cout << it->key << " : " << it->value << std::endl;
     }
-
-    std::cout << map["three"] << std::endl;
-    std::cout << map["two"] << std::endl;
 
     return 0;
 }

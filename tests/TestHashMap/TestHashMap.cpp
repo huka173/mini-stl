@@ -113,3 +113,33 @@ TEST(HashMap, TestEraseInCollisionChain) {
 
     EXPECT_EQ(map.find(1), nullptr);
 }
+
+TEST(HashMap, TestInitializerList) {
+    HashMap<std::string, int> map{
+        {"One", 1},
+        {"Two", 2},
+        {"Three", 3}
+    };
+    EXPECT_EQ(map.size(), 3);
+    EXPECT_EQ(map.bucketCount(), 16);
+    EXPECT_EQ(map["One"], 1);
+    EXPECT_EQ(map["Two"], 2);
+    EXPECT_EQ(map["Three"], 3);
+
+    map = {
+        {"One", 1}
+    };
+    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(map["One"], 1);
+
+    map = {};
+    EXPECT_EQ(map.size(), 0);
+    EXPECT_EQ(map.bucketCount(), 16);
+
+    map = {
+        {"One", 1},
+        {"One", 2}
+    };
+    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(map["One"], 2);
+}
