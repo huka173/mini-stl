@@ -1,6 +1,13 @@
 cmake_minimum_required( VERSION 3.12 )
 
-add_executable("Test" "TestVector/TestVector.cpp" "TestList/TestList.cpp")
+add_executable("Test" 
+    "TestVector/TestVector.cpp" 
+    "TestVector/TestVectorIterator.cpp" 
+    "TestList/TestList.cpp" 
+    "TestList/TestListIterator.cpp" 
+    "TestHashMap/TestHashMap.cpp"
+    "TestHashMap/TestHashMapIterator.cpp"
+)
 
 target_include_directories("Test" PRIVATE "${CMAKE_SOURCE_DIR}/include/mini-stl")
 target_link_libraries("Test" INTERFACE "mini-stl")

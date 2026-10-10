@@ -2,7 +2,7 @@
     if (MSVC)
         target_compile_options(${target} PRIVATE /W4 /permissive-)
     else()
-        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+        target_compile_options(${target} PRIVATE -Wall -Wextra)
     endif()
 
     if(MSVC)
@@ -44,6 +44,7 @@ set_cpp_20("mini-stl")
 
 add_subdirectory("example/ExampleVector")
 add_subdirectory("example/ExampleList")
+add_subdirectory("example/ExampleHashMap")
 
 enable_testing()
 add_subdirectory("tests")

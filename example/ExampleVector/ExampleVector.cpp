@@ -12,8 +12,8 @@ int main() {
     vec.push_back(43);
 
     std::cout << "Vector: ";
-    for (size_t i{}; i < vec.size(); ++i) {
-        std::cout << vec.at(i) << " ";
+    for (const auto &elem : vec) {
+        std::cout << elem << " ";
     }
     std::cout << std::endl;
 
@@ -22,8 +22,8 @@ int main() {
     std::cout << "Vec size: " << vec.size() << std::endl;
 
     std::cout << "Vector: ";
-    for (size_t i{}; i < vec.size(); ++i) {
-        std::cout << vec.at(i) << " ";
+    for (const auto &elem : vec) {
+        std::cout << elem << " ";
     }
     std::cout << std::endl;
 
@@ -36,8 +36,8 @@ int main() {
     std::cout << "Vec size: " << vec.size() << std::endl;
 
     std::cout << "Vector: ";
-    for (size_t i{}; i < vec.size(); ++i) {
-        std::cout << vec.at(i) << " ";
+    for (const auto &elem : vec) {
+        std::cout << elem << " ";
     }
     std::cout << std::endl;
     std::cout << "Enter...\n";

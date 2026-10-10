@@ -63,6 +63,13 @@ TEST(Vector, TestPushBack) {
     }
 }
 
+TEST(Vector, TestPopBack) {
+    Vector<int> arr{ 10, 20, 30 };
+    arr.pop_back();
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr.capacity(), 3);
+}
+
 TEST(Vector, TestBack) {
     Vector<int> numbers{ 1, 2, 3 };
     ASSERT_EQ(numbers.back(), 3);

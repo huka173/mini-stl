@@ -1,14 +1,20 @@
+#include <iostream>
+#include <utility>
+
 template <typename T>
 List<T>::List() :
-    m_head{ nullptr },
-    m_tail{ nullptr },
-    m_size{} {}
+    m_node{ new Node<T>{} },
+    m_size{} {
+    m_node->next = m_node;
+    m_node->prev = m_node;
+}
 
 template <typename T>
 List<T>::List(const std::initializer_list<T> list) :
-    m_head{ nullptr },
-    m_tail{ nullptr },
+    m_node{ new Node<T>{} },
     m_size{} {
+    m_node->next = m_node;
+    m_node->prev = m_node;
     for (const auto &elem : list) {
         push_back(elem);
     }
@@ -16,25 +22,23 @@ List<T>::List(const std::initializer_list<T> list) :
 
 template <typename T>
 List<T>::~List() {
-    Node<T> *current{ m_head };
-    while (current != nullptr) {
+    Node<T> *current{ m_node->next };
+    while (current != m_node) {
         Node<T> *nextNode{ current->next };
         delete current;
         current = nextNode;
     }
+    delete m_node;
 }
 
 template <typename T>
 void List<T>::push_back(const T &value) {
     Node<T> *node{ new Node<T>{value, nullptr, nullptr} };
-    if (m_head == nullptr) {
-        m_head = node;
-        m_tail = node;
-    } else {
-        m_tail->next = node;
-        node->prev = m_tail;
-        m_tail = node;
-    }
+    auto tail{ m_node->prev };
+    tail->next = node;
+    node->prev = tail;
+    node->next = m_node;
+    m_node->prev = node;
 
     ++m_size;
 }
@@ -42,14 +46,11 @@ void List<T>::push_back(const T &value) {
 template <typename T>
 void List<T>::push_front(const T &value) {
     Node<T> *node{ new Node<T>{value, nullptr, nullptr} };
-    if (m_head == nullptr) {
-        m_head = node;
-        m_tail = node;
-    } else {
-        m_head->prev = node;
-        node->next = m_head;
-        m_head = node;
-    }
+    auto head{ m_node->next };
+    head->prev = node;
+    node->next = head;
+    node->prev = m_node;
+    m_node->next = node;
 
     ++m_size;
 }
@@ -66,55 +67,60 @@ bool List<T>::empty() const {
 
 template <typename T>
 T &List<T>::front() noexcept {
-    return m_head->value;
+    return m_node->next->value;
 }
 
 template <typename T>
 const T &List<T>::front() const noexcept {
-    return m_head->value;
+    return m_node->next->value;
 }
 
 template <typename T>
 T &List<T>::back() noexcept {
-    return m_tail->value;
+    return m_node->prev->value;
 }
 
 template <typename T>
 const T &List<T>::back() const noexcept {
-    return m_tail->value;
+    return m_node->prev->value;
 }
 
 template <typename T>
-Node<T> *List<T>::begin() noexcept {
-    return m_head;
+List<T>::Iterator List<T>::begin() noexcept {
+    return Iterator{ m_node->next };
 }
 
 template <typename T>
-const Node<T> *List<T>::begin() const noexcept {
-    return m_head;
+List<T>::ConstIterator List<T>::begin() const noexcept {
+    return ConstIterator{ m_node->next };
 }
 
 template <typename T>
-Node<T> *List<T>::end() noexcept {
-    return m_tail;
+List<T>::ConstIterator List<T>::cbegin() const noexcept {
+    return ConstIterator{ m_node->next };
 }
 
 template <typename T>
-const Node<T> *List<T>::end() const noexcept {
-    return m_tail;
+List<T>::Iterator List<T>::end() noexcept {
+    return Iterator{ m_node };
+}
+
+template <typename T>
+List<T>::ConstIterator List<T>::end() const noexcept {
+    return ConstIterator{ m_node };
+}
+
+template <typename T>
+List<T>::ConstIterator List<T>::cend() const noexcept {
+    return ConstIterator{ m_node };
 }
 
 template <typename T>
 void List<T>::pop_back() {
-    if (m_size == 1) {
-        delete m_head;
-        m_head = nullptr;
-        m_tail = nullptr;
-        m_size = 0;
-    } else if (m_size >= 2) {
-        Node<T> *lastElem{ m_tail };
-        m_tail = lastElem->prev;
-        m_tail->next = nullptr;
+    if (m_size > 0) {
+        Node<T> *lastElem{ m_node->prev };
+        m_node->prev = lastElem->prev;
+        m_node->prev->next = m_node;
         delete lastElem;
         --m_size;
     }
@@ -122,12 +128,10 @@ void List<T>::pop_back() {
 
 template <typename T>
 void List<T>::pop_front() {
-    if (m_size == 1) {
-        pop_back();
-    } else if (m_size >= 2) {
-        Node<T> *firstElem{ m_head };
-        m_head = firstElem->next;
-        m_head->prev = nullptr;
+    if (m_size > 0) {
+        Node<T> *firstElem{ m_node->next };
+        m_node->next = firstElem->next;
+        m_node->next->prev = m_node;
         delete firstElem;
         --m_size;
     }
@@ -135,71 +139,151 @@ void List<T>::pop_front() {
 
 template <typename T>
 void List<T>::clear() {
-    Node<T> *current{ m_head };
-    while (current != nullptr) {
+    Node<T> *current{ m_node->next };
+    while (current != m_node) {
         Node<T> *nextNode{ current->next };
         delete current;
         current = nextNode;
     }
-    m_head = nullptr;
-    m_tail = nullptr;
+    m_node->next = m_node;
+    m_node->prev = m_node;
     m_size = 0;
 }
 
 template <typename T>
-List<T>::List(const List<T> &copy) {
-    if (copy.m_size == 0) {
-        m_head = nullptr;
-        m_tail = nullptr;
-        m_size = 0;
-    } else {
-        m_head = new Node<T>{ copy.m_head->value };
-        m_size = copy.m_size;
+void List<T>::remove(const T &val) {
+    if (empty()) {
+        return;
+    }
 
-        Node<T> *current{ m_head };
-        for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
-            Node<T> *node{ new Node<T>{ it->value } };
-            current->next = node;
-            node->prev = current;
+    while (!empty() && m_node->next->value == val) {
+        pop_front();
+    }
 
-            current = node;
+    while (!empty() && m_node->prev->value == val) {
+        pop_back();
+    }
+
+    Node<T> *current{ m_node->next };
+    while (current != m_node) {
+        Node<T> *nextNode{ current->next };
+        Node<T> *prevNode{ current->prev };
+        if (current->value == val) {
+            delete current;
+            --m_size;
+            current = nextNode;
+            current->prev = prevNode;
+            prevNode->next = current;
+        } else {
+            current = nextNode;
+        }
+    }
+}
+
+template <typename T>
+List<T>::Iterator List<T>::erase(Iterator it) {
+    Node<T> *node{ it.m_ptr };
+    if (node == m_node) {
+        return end();
+    }
+
+    Node<T> *next{ node->next };
+    node->prev->next = next;
+    next->prev = node->prev;
+    delete node;
+    --m_size;
+
+    return Iterator{ next };
+}
+
+template <typename T>
+List<T>::List(const List<T> &copy) : m_node{ new Node<T>{} }, m_size{} {
+    m_node->next = m_node;
+    m_node->prev = m_node;
+    try {
+        for (auto it{ copy.begin() }; it != copy.end(); ++it) {
+            push_back(*it);
+        }
+    } catch (...) {
+        auto *current{ m_node->next };
+        while (current != m_node) {
+            auto nextNode{ current->next };
+            delete current;
+            current = nextNode;
         }
 
-        m_tail = current;
+        delete m_node;
+        throw;
     }
 }
 
 template <typename T>
 List<T> &List<T>::operator=(const List<T> &copy) {
-    if (this == &copy) {
-        return *this;
-    }
-
-    if (m_size != 0) {
-        this->clear();
-    }
-
-    if (copy.m_size == 0) {
-        m_head = nullptr;
-        m_tail = nullptr;
-        m_size = 0;
-
-        return *this;
-    }
-
-    m_head = new Node<T>{ copy.m_head->value };
-    m_size = copy.m_size;
-
-    Node<T> *current{ m_head };
-    for (auto *it{ copy.begin()->next }; it != nullptr; it = it->next) {
-        Node<T> *node{ new Node<T>{ it->value } };
-        current->next = node;
-        node->prev = current;
-
-        current = node;
-    }
-
-    m_tail = current;
-
+    List<T> temp{ copy };
+    swap(temp);
     return *this;
+}
+
+template <typename T>
+void List<T>::swap(List<T> &another) noexcept {
+    std::swap(m_node, another.m_node);
+    std::swap(m_size, another.m_size);
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst>::BaseIterator(node_ptr_type ptr) : m_ptr{ ptr } {}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst>::ref_type List<T>::BaseIterator<notConst>::operator*() const {
+    return m_ptr->value;
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst>::ptr_type List<T>::BaseIterator<notConst>::operator->() const {
+    return &(m_ptr->value);
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst> &List<T>::BaseIterator<notConst>::operator++() {
+    m_ptr = m_ptr->next;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst> List<T>::BaseIterator<notConst>::operator++(int) {
+    BaseIterator copy{ *this };
+    m_ptr = m_ptr->next;
+    return copy;
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst> &List<T>::BaseIterator<notConst>::operator--() {
+    m_ptr = m_ptr->prev;
+    return *this;
+}
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst> List<T>::BaseIterator<notConst>::operator--(int) {
+    BaseIterator copy{ *this };
+    m_ptr = m_ptr->prev;
+    return copy;
+}
+
+template <typename T>
+template <bool notConst>
+bool List<T>::BaseIterator<notConst>::operator==(const BaseIterator &it) const {
+    return m_ptr == it.m_ptr;
+}
+
+template <typename T>
+template <bool notConst>
+bool List<T>::BaseIterator<notConst>::operator!=(const BaseIterator &it) const {
+    return !(*this == it);
 }
