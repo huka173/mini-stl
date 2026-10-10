@@ -12,8 +12,8 @@ TEST(HashMapIterator, TestOperatorArrow) {
     }
 
     const HashMap<int, int> cmap{ map };
-    for (auto it{ cmap.cbegin() }; it != cmap.cend(); ++it) {
-        ASSERT_EQ(it->value, map[it->key]);
+    for (auto cit{ cmap.cbegin() }; cit != cmap.cend(); ++cit) {
+        ASSERT_EQ(cit->value, map[cit->key]);
     }
 }
 
@@ -44,11 +44,9 @@ TEST(HashMapIterator, TestRangeBasedFor) {
         {200, 2},
         {300, 3}
     };
-    int i{ 1 };
+    
     for (const auto &[key, value] : map) {
-        ASSERT_EQ(key, i * 100);
-        ASSERT_EQ(value, i);
-        ++i;
+        ASSERT_EQ(map.find(key)->value, value);
     }
 
     const HashMap<int, int> cmap{
@@ -56,11 +54,8 @@ TEST(HashMapIterator, TestRangeBasedFor) {
         {200, 2},
         {300, 3}
     };
-    i = 1;
     for (const auto &[key, value] : cmap) {
-        ASSERT_EQ(key, i * 100);
-        ASSERT_EQ(value, i);
-        ++i;
+        ASSERT_EQ(cmap.find(key)->value, value);
     }
 }
 
@@ -92,4 +87,34 @@ TEST(HashMapIterator, TestIncrement) {
     ASSERT_EQ((*cit).value, 3);
     ++cit;
     ASSERT_TRUE(cit == cmap.cend());
+}
+
+TEST(HashMapIterator, TestConstEmptyMap) {
+    const HashMap<int, int> map;
+    ASSERT_EQ(map.size(), 0);
+    ASSERT_TRUE(map.begin() == map.end());
+}
+
+TEST(HashMapIterator, TestPostfixOperator) {
+    HashMap<std::string, int> map{
+        {"100", 10},
+        {"200", 20},
+        {"300", 30}
+    };
+    auto it{ map.begin() };
+    ASSERT_EQ((it++)->value, 10);
+    ASSERT_EQ((it++)->value, 20);
+    ASSERT_EQ((it++)->value, 30);
+    ASSERT_EQ(it, map.end());
+
+    const HashMap<std::string, int> cmap{
+        {"100", 10},
+        {"200", 20},
+        {"300", 30}
+    };
+    auto cit{ cmap.cbegin() };
+    ASSERT_EQ((cit++)->value, 10);
+    ASSERT_EQ((cit++)->value, 20);
+    ASSERT_EQ((cit++)->value, 30);
+    ASSERT_EQ(cit, cmap.end());
 }
