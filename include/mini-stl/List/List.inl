@@ -287,3 +287,9 @@ template <bool notConst>
 bool List<T>::BaseIterator<notConst>::operator!=(const BaseIterator &it) const {
     return !(*this == it);
 }
+
+template <typename T>
+template <bool notConst>
+List<T>::BaseIterator<notConst>::operator BaseIterator<false>() const {
+    return { m_ptr };
+}

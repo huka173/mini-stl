@@ -37,6 +37,8 @@ class List {
 
         bool operator==(const BaseIterator &it) const;
         bool operator!=(const BaseIterator &it) const;
+
+        operator BaseIterator<false>() const;
     };
 
 public:

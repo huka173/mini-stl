@@ -56,6 +56,8 @@ class HashMap {
 
         bool operator==(const BaseIterator &it) const;
         bool operator!=(const BaseIterator &it) const;
+
+        operator BaseIterator<false>() const;
     };
 
 

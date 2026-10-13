@@ -143,3 +143,13 @@ TEST(VectorIterator, TestEQ) {
     it1 = it2;
     ASSERT_TRUE(it2 == it1);
 }
+
+TEST(VectorIterator, TestConvertToConstIt) {
+    Vector<int> arr{ 1, 2, 3, 4 };
+    Vector<int>::Iterator it{ arr.begin() };
+    int i{ 1 };
+    for (Vector<int>::ConstIterator cit{ it }; cit != arr.cend(); ++cit) {
+        ASSERT_EQ(*cit, i);
+        ++i;
+    }
+}

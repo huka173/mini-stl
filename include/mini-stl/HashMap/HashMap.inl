@@ -252,3 +252,9 @@ HashMap<Key, Value>::BaseIterator<notConst> HashMap<Key, Value>::BaseIterator<no
     ++(*this);
     return copy;
 }
+
+template <typename Key, typename Value>
+template <bool notConst>
+HashMap<Key, Value>::BaseIterator<notConst>::operator BaseIterator<false>() const {
+    return { m_vectorIterator, m_listIterator, m_endVectorIterator, m_endListIterator };
+}

@@ -118,3 +118,16 @@ TEST(HashMapIterator, TestPostfixOperator) {
     ASSERT_EQ((cit++)->value, 30);
     ASSERT_EQ(cit, cmap.end());
 }
+
+TEST(HashMapIterator, TestConvertToConstIt) {
+    HashMap<std::string, int> map{
+        {"100", 10},
+        {"200", 20},
+        {"300", 30}
+    };
+
+    HashMap<std::string, int>::Iterator it{ map.begin() };
+    for (HashMap<std::string, int>::ConstIterator cit{ it }; cit != map.end(); ++cit) {
+        ASSERT_EQ(cit->value, map.find(cit->key)->value);
+    }
+}

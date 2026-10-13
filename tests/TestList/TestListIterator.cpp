@@ -97,3 +97,13 @@ TEST(ListIterator, TestArrowOperator) {
         ASSERT_EQ(it->value, i);
     }
 }
+
+TEST(ListIterator, TestConvertToConstIt) {
+    List<int> list{ 1, 2, 3, 4 };
+    List<int>::Iterator it{ list.begin() };
+    int i{ 1 };
+    for (List<int>::ConstIterator cit{ it }; cit != list.cend(); ++cit) {
+        ASSERT_EQ(*cit, i);
+        ++i;
+    }
+}
